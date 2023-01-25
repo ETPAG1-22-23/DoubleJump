@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     Animator animController;
     float horizontal_value;
     Vector2 ref_velocity = Vector2.zero;
+   
 
     float jumpForce = 12f;
 
@@ -16,6 +17,8 @@ public class Player : MonoBehaviour
     [SerializeField] bool is_jumping = false;
     [SerializeField] bool can_jump = false;
     [Range(0, 1)][SerializeField] float smooth_time = 0.5f;
+    [SerializeField] bool canDoubleJump = false;
+    public bool IsGrounded;
 
 
     // Start is called before the first frame update
@@ -36,12 +39,29 @@ public class Player : MonoBehaviour
         else if (horizontal_value < 0) sr.flipX = true;
         
         animController.SetFloat("Speed", Mathf.Abs(horizontal_value));
+
+       if(IsGrounded())
+        {
+            canDoubleJump = true;
+        }
    
         if (Input.GetButtonDown("Jump") && can_jump)
+         if (IsGrounded())
         {
             is_jumping = true;
             animController.SetBool("Jumping", true);
+          }else if (canDoubleJump())
+             {
+                is_jumping = true;
+                animController.SetBool("Jumping", true);
+                canDoubleJump = false;
+             }
         }
+        
+           
+        
+       
+        
     }
     void FixedUpdate()
     {
@@ -63,5 +83,10 @@ public class Player : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {   
         animController.SetBool("Jumping", false);        
+    }
+
+    void jump ()
+    {
+
     }
 }

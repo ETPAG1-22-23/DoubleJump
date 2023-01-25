@@ -434,6 +434,8 @@ MonoBehaviour:
   is_jumping: 0
   can_jump: 0
   smooth_time: 0.5
+  canDoubleJump: 1
+  IsGrounded: 0
 --- !u!95 &694507428
 Animator:
   serializedVersion: 4
@@ -3735,7 +3737,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
-      m_AllTileFlags: 1073741825
+      m_AllTileFlags: 1
   - first: {x: -15, y: -5, z: 0}
     second:
       serializedVersion: 2
@@ -4055,7 +4057,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
-      m_AllTileFlags: 1073741825
+      m_AllTileFlags: 1
   - first: {x: -17, y: -4, z: 0}
     second:
       serializedVersion: 2
@@ -4075,7 +4077,7 @@ Tilemap:
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
       dummyAlignment: 0
-      m_AllTileFlags: 1073741825
+      m_AllTileFlags: 1
   - first: {x: -15, y: -4, z: 0}
     second:
       serializedVersion: 2
