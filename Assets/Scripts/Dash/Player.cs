@@ -18,17 +18,21 @@ public class Player : MonoBehaviour
     [SerializeField] bool can_jump = false;
     [Range(0, 1)] [SerializeField] float smooth_time = 1f;
     [SerializeField] private TrailRenderer tr;
-   
+
+
 
 
     [SerializeField] bool IsGrounded = false;
     [SerializeField] int CountJump = 2;
     private int LastPressedJumpTime = 0;
     private int LastOnGroundTime = 0;
+    [SerializeField] private Transform shootingPoint;
+    [SerializeField] private Transform gun;
+    
 
     // Vitesse de déplacement du joueur
     public float moveSpeed = 5f;
-    // Distance maximale de deplacement lors du dash
+    // Distance maximale de déplacement lors du dash
     public float dashDistance = 5f;
     // Temps de recharge du dash en secondes
     public float dashCooldown = 1f;
@@ -37,8 +41,11 @@ public class Player : MonoBehaviour
     // Temps restant avant de pouvoir utiliser le dash à nouveau
     private float dashCooldownTimer = 0f;
 
-        // Start is called before the first frame update
-        void Start()
+
+
+
+    // Start is called before the first frame update
+    void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
@@ -49,6 +56,61 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        // Si le dash est en cours de recharge, mettre à jour le temps restant
+        if (dashCooldownTimer > 0)
+        {
+            dashCooldownTimer -= Time.deltaTime;
+        }
+
+        // Sinon, permettre au joueur d'utiliser le dash
+        else
+        {
+            // Récupérer le vecteur de direction
+            float horizontal = Input.GetAxisRaw("Horizontal");
+            float vertical = Input.GetAxisRaw("Vertical");
+            Vector2 direction = new Vector2(horizontal, vertical).normalized;
+
+            // Si le joueur appuie sur la touche de dash et que la direction est valide
+            if (Input.GetKeyDown(KeyCode.LeftShift) && direction != Vector2.zero)
+            {
+                // Normaliser la direction pour éviter les déplacements excessifs en diagonale
+                if (direction.magnitude > 1f)
+                {
+                    direction.Normalize();
+                }
+
+                // Stocker la direction pour le dash
+                dashDirection = direction;
+
+                // Mettre en place le temps de recharge du dash
+                dashCooldownTimer = dashCooldown;
+                tr.emitting = true;
+            }
+        }
+
+
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            tr.emitting = false;
+        }
+
+        if (horizontal_value > 0)
+        {
+            sr.flipX = false;
+            shootingPoint.localPosition = new Vector2(0.93f, -0.61f); // Comme le gun.localPosition mais avec des coord. differentes
+            gun.localPosition = new Vector2(0.5f, -0.61f); // change sa position par rapport a ses parents en un nouveau vecteur qui as des coord. opposes a l'autre
+        }
+        else if (horizontal_value < 0)
+        {
+            sr.flipX = true;
+
+
+            shootingPoint.localPosition = new Vector2(-0.93f, -0.61f); // Comme le gun.localPosition mais avec des coord. differentes
+
+            gun.localPosition = new Vector2(-0.5f, -0.61f); // Change sa position par rapport a ses parents en un nouveau vecteur qui as des coord. opposes a l'autre
+        }
+
         horizontal_value = Input.GetAxis("Horizontal");
 
         if (horizontal_value > 0) sr.flipX = false;
@@ -63,42 +125,14 @@ public class Player : MonoBehaviour
 
         }
 
-        // Si le dash est en cours de recharge, mettre a jour le temps restant
-        if (dashCooldownTimer > 0)
-        {
-            dashCooldownTimer -= Time.deltaTime;
-        }
+        
+           
 
-        // Sinon, permettre au joueur d'utiliser le dash
-        else
-        {
-            // Recuperer le vecteur de direction
-            float horizontal = Input.GetAxisRaw("Horizontal");
-            float vertical = Input.GetAxisRaw("Vertical");
-            Vector2 direction = new Vector2(horizontal, vertical).normalized;
-
-            // Si le joueur appuie sur la touche de dash et que la direction est valide
-            if (Input.GetKeyDown(KeyCode.LeftShift) && direction != Vector2.zero)
+            if (Input.GetButtonDown("Jump") && can_jump)
             {
-                // Normaliser la direction pour éviter les deplacements excessifs en diagonale
-                if (direction.magnitude > 1f)
-                {
-                    direction.Normalize();
-                }
-
-                // Stocker la direction pour le dash
-                dashDirection = direction;
-
-                // Mettre en place le temps de recharge du dash
-                dashCooldownTimer = dashCooldown;
-                tr.emitting = true;
+                is_jumping = true;
+                animController.SetBool("Jumping", true);
             }
-
-        }
-        if (Input.GetKeyUp(KeyCode.LeftShift))
-        {
-            tr.emitting = false;
-        }
     }
 
 
@@ -127,8 +161,28 @@ public class Player : MonoBehaviour
     void FixedUpdate()
     {
 
-        Vector2 target_velocity = new Vector2(horizontal_value * moveSpeed_horizontal * Time.fixedDeltaTime, rb.velocity.y);
+        // Si le joueur est en train de dasher, le déplacer
+        if (dashDirection != Vector2.zero)
+        {
+            //transform.position += dashDirection * dashDistance; //ca marche aussi avec ca mais ca te tp dans le sol
+
+            //rb.velocity = dashDirection * dashDistance / Time.fixedDeltaTime; //envoie trop loin
+
+            Vector2 targetPosition = rb.position + dashDirection * dashDistance; //CA MARCHE FINALEMENT
+
+            rb.MovePosition(targetPosition);
+
+            // Réinitialiser la direction du dash
+            dashDirection = Vector2.zero;
+        }
+
+        else
+        {
+            Vector2 target_velocity = new Vector2(horizontal_value * moveSpeed_horizontal * Time.fixedDeltaTime, rb.velocity.y);
         rb.velocity = Vector2.SmoothDamp(rb.velocity, target_velocity, ref ref_velocity, 0.05f);
+        
+        }
+        
 
     }
     private void OnTriggerStay2D(Collider2D collision)
@@ -149,30 +203,8 @@ public class Player : MonoBehaviour
     {
         animController.SetBool("Jumping", true);
         IsGrounded = false;
-
-        // Si le joueur est en train de dasher, le déplacer
-        if (dashDirection != Vector2.zero)
-        {
-            //transform.position += dashDirection * dashDistance; //ca marche aussi avec ca mais ca te tp dans le sol
-
-            //rb.velocity = dashDirection * dashDistance / Time.fixedDeltaTime; //envoie trop loin
-
-            Vector2 targetPosition = rb.position + dashDirection * dashDistance; //CA MARCHE FINALEMENT
-
-            rb.MovePosition(targetPosition);
-
-            // Réinitialiser la direction du dash
-            dashDirection = Vector2.zero;
-        }
-        // Sinon, déplacer le joueur normalement
-        else
-        {
-            Vector2 target_velocity = new Vector2(horizontal_value * moveSpeed_horizontal * Time.fixedDeltaTime, rb.velocity.y);
-            return;
-
-        }
     }
-
+    
 
 
 
