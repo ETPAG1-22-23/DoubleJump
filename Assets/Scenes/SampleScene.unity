@@ -604,13 +604,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 694507420}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73683b7194ed3cf4ba4ce9472fc92b42, type: 3}
+  m_Script: {fileID: 11500000, guid: 13ec3227827c4cf4ebc2cbd9a607a057, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed_horizontal: 350
+  moveSpeed_horizontal: 400
   is_jumping: 0
   can_jump: 0
-  smooth_time: 0.5
+  smooth_time: 1
   tr: {fileID: 694507432}
   IsGrounded: 0
   CountJump: 2
@@ -1069,27 +1069,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fc93dc3a758a9a4f80847970dd1720a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &2055414800 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7943495038689314393, guid: 9cadf39fb6f36f846ae5525126e30f3c, type: 3}
-  m_PrefabInstance: {fileID: 2069015137}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2055414802
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2055414800}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b87754764d505254aaca9ec41173bb61, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bullet: {fileID: 1159527452641719572, guid: 7392729b3444e6f45a7767a86033a405, type: 3}
-  bulletTransform: {fileID: 7943495038129492156, guid: 9cadf39fb6f36f846ae5525126e30f3c, type: 3}
-  canFire: 1
-  timeBetweenFiring: 0
 --- !u!114 &2058109637 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1450390828600085425, guid: a6c94513d714bcc45b56633d122b4c35, type: 3}
